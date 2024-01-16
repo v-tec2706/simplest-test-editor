@@ -1,0 +1,2 @@
+# simplest-test-editor
+Test editor written in Rust, based on `Hecto`. 
