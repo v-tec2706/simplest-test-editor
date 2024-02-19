@@ -2,9 +2,9 @@ use crate::Row;
 use std::fs;
 use std::io::Error;
 
-#[derive(Default)]
 pub struct Document {
     lines: Vec<Row>,
+    pub filename: String,
 }
 
 impl Document {
@@ -15,7 +15,17 @@ impl Document {
             lines.push(Row::from(line.to_string()));
         }
 
-        Ok(Document { lines })
+        Ok(Document {
+            lines,
+            filename: filename.to_string(),
+        })
+    }
+
+    pub fn empty() -> Document {
+        Document {
+            lines: Vec::new(),
+            filename: String::from("Unnamed"),
+        }
     }
 
     pub fn row(&self, index: usize) -> Option<&Row> {
@@ -24,5 +34,9 @@ impl Document {
 
     pub fn is_empty(&self) -> bool {
         self.lines.is_empty()
+    }
+
+    pub fn size(&self) -> usize {
+        self.lines.len()
     }
 }

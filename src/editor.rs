@@ -1,9 +1,12 @@
 use crate::document::Document;
+use crate::terminal;
 use crate::terminal::Size;
 use crate::terminal::Terminal;
 use std::env;
 use std::io;
 use std::io::Error;
+use termion::color;
+use termion::color::Color;
 use termion::event::Key;
 use termion::raw::IntoRawMode;
 
@@ -24,9 +27,9 @@ impl Editor {
     pub fn default() -> Self {
         let args: Vec<String> = env::args().skip(1).collect();
         let doc = if args.len() == 1 {
-            Document::open(&args[0]).unwrap_or(Document::default())
+            Document::open(&args[0]).unwrap_or(Document::empty())
         } else {
-            Document::default()
+            Document::empty()
         };
 
         Editor {
@@ -131,7 +134,7 @@ impl Editor {
 
     fn draw_rows(&self) {
         let height = self.terminal.size().height;
-        for row in 0..height - 1 {
+        for row in 0..height {
             Terminal::clear_current_line();
             if row == height / 3 && self.document.is_empty() {
                 self.draw_welcome_message();
@@ -139,6 +142,7 @@ impl Editor {
                 self.draw_doc_line(row + self.offset.y);
             }
         }
+        self.draw_message_bar();
     }
 
     fn draw_doc_line(&self, index: u16) -> Result<(), Error> {
@@ -150,6 +154,24 @@ impl Editor {
             println!("~\r");
         }
         Ok(())
+    }
+
+    fn draw_status_bar(&self) {
+        Terminal::clear_current_line();
+    }
+
+    fn draw_message_bar(&self) {
+        Terminal::set_bg_color();
+        Terminal::set_fg_color();
+        let status_msg = format!(
+            "{} | {} lines",
+            self.document.filename,
+            self.document.size()
+        );
+        let spaces_to_fulfill = self.terminal.size().width as usize - status_msg.len();
+        println!("{}{}\r", status_msg, " ".repeat(spaces_to_fulfill));
+        Terminal::reset_bg_color();
+        Terminal::reset_fg_color();
     }
 
     fn refresh_screen(&self) -> Result<(), Error> {

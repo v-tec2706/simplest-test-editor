@@ -4,6 +4,7 @@ use std::io::ErrorKind;
 use std::io::Write;
 use termion;
 use termion::clear;
+use termion::color;
 use termion::cursor;
 use termion::event::Key;
 use termion::input::TermRead;
@@ -63,5 +64,21 @@ impl Terminal {
 
     pub fn flush() -> Result<(), Error> {
         io::stdout().flush()
+    }
+
+    pub fn set_bg_color() {
+        print!("{}", color::Bg(color::LightBlack));
+    }
+
+    pub fn reset_bg_color() {
+        print!("{}", color::Bg(color::Reset));
+    }
+
+    pub fn set_fg_color() {
+        print!("{}", color::Fg(color::LightCyan));
+    }
+
+    pub fn reset_fg_color() {
+        print!("{}", color::Fg(color::Reset));
     }
 }
